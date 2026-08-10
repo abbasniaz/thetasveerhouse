@@ -1,1 +1,78 @@
-There was an error committing your changes: A file with the same name already exists. Please choose a different name and try again.
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thetas Veer House</title>
+
+  <!-- Simple styling for layout and the LightWidget embed -->
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      line-height: 1.4;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      color: #222;
+    }
+    header { padding: 24px; text-align: center; border-bottom: 1px solid #eee; }
+    main { max-width: 1100px; margin: 28px auto; padding: 0 16px; }
+    h1 { margin: 0 0 8px; font-size: 1.6rem; }
+    p.lead { margin: 0 0 24px; color: #555; }
+
+    /* LightWidget wrapper & iframe styling */
+    .lw-embed-wrap { max-width: 1100px; margin: 0 auto; }
+    .lw-embed-wrap iframe.lightwidget-widget {
+      width: 100%;
+      border: 0;
+      overflow: hidden;
+      display: block;
+      /* default height; adjust as needed */
+      height: 640px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .lw-embed-wrap iframe.lightwidget-widget { height: 560px; }
+    }
+    @media (max-width: 600px) {
+      .lw-embed-wrap iframe.lightwidget-widget { height: 420px; }
+    }
+
+    footer { text-align:center; padding: 24px; color:#888; border-top:1px solid #eee; margin-top: 36px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Thetas Veer House</h1>
+    <p class="lead">Follow us on Instagram</p>
+  </header>
+
+  <main>
+    <section aria-label="Instagram feed">
+      <div class="lw-embed-wrap" aria-hidden="false">
+        <!-- LightWidget embed (responsive, accessible) -->
+        <script async src="https://cdn.lightwidget.com/widgets/lightwidget.js"></script>
+        <iframe
+          title="Instagram feed"
+          src="https://lightwidget.com/widgets/9e870f1359f65a618561ebe2075afa36.html"
+          class="lightwidget-widget"
+          style=""
+          scrolling="no"
+          allowtransparency="true"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>&copy; <span id="year"></span> Thetas Veer House</small>
+  </footer>
+
+  <script>
+    // Small script for footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
