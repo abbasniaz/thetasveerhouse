@@ -134,6 +134,9 @@
  
 <form id="contactForm" name="contact" class="contact-form">
 
+      <!-- honeypot field to deter bots (should remain empty) -->
+      <input type="text" name="hp_field" id="hp_field" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" tabindex="-1" autocomplete="off" />
+
       <label for="name">Full name</label>
       <input id="name" name="name" type="text" placeholder="Your Name" required />
 
