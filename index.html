@@ -55,14 +55,14 @@
 
 <div class="gallery-grid">
 
-  <img src="photo1.jpeg" alt="Wedding Photography">
-  <img src="photo2.jpeg" alt="Wedding Photography">
-  <img src="photo3.jpeg" alt="Wedding Photography">
-  <img src="photo4.jpeg" alt="Wedding Photography">
-  <img src="photo5.jpeg" alt="Wedding Photography">
-  <img src="photo6.jpeg" alt="Wedding Photography">
-  <img src="photo7.jpeg" alt="Wedding Photography">
-  <img src="photo8.jpeg" alt="Wedding Photography">
+  <img src="photo1.jpeg" alt="Wedding Photography" loading="lazy">
+  <img src="photo2.jpeg" alt="Wedding Photography" loading="lazy">
+  <img src="photo3.jpeg" alt="Wedding Photography" loading="lazy">
+  <img src="photo4.jpeg" alt="Wedding Photography" loading="lazy">
+  <img src="photo5.jpeg" alt="Wedding Photography" loading="lazy">
+  <img src="photo6.jpeg" alt="Wedding Photography" loading="lazy">
+  <img src="photo7.jpeg" alt="Wedding Photography" loading="lazy">
+  <img src="photo8.jpeg" alt="Wedding Photography" loading="lazy">
 
 </div>
 
@@ -132,12 +132,7 @@
       <p>Send a message with your event date, location, and photography needs. I’ll respond with availability and package options.</p>
     </div>
  
-<form id="contactForm" name="contact"
-      method="POST"
-      data-netlify="true"
-      class="contact-form">
-
-  <input type="hidden" name="form-name" value="contact" />
+<form id="contactForm" name="contact" class="contact-form">
 
       <label for="name">Full name</label>
       <input id="name" name="name" type="text" placeholder="Your Name" required />
@@ -162,7 +157,7 @@
         <button type="button" id="sendWhatsapp" class="btn secondary">Send via WhatsApp</button>
       </div>
 
-      <small id="formStatus" aria-live="polite" style="display:block; margin-top:10px; color:var(--muted)">Tip: Connect this form to a backend (Formspree, Netlify Forms) to collect submissions. Currently messages will open your email or WhatsApp.</small>
+      <small id="formStatus" aria-live="polite" style="display:block; margin-top:10px; color:var(--muted)">Tip: Messages will be added to your GitHub inbox when the site is deployed and configured; if the server is unreachable we'll open your mail or WhatsApp as a fallback.</small>
     </form>
   </section>
 
