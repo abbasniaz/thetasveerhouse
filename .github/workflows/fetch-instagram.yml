@@ -1,5 +1,8 @@
 name: Fetch Instagram media
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: '*/15 * * * *' # every 15 minutes; adjust as needed
@@ -8,90 +11,89 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ...rest of your steps...
-Code
-  - name: Setup Node
-    uses: actions/setup-node@v4
-    with:
-      node-version: 20
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  - name: Fetch Instagram media
-    env:
-      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-      IG_USER_ID: ${{ secrets.IG_USER_ID }}
-    run: |
-      mkdir -p scripts
-      cat > scripts/fetch-instagram.js <<'NODE'
-      // fetch-instagram.js
-      // Uses IG_ACCESS_TOKEN and IG_USER_ID from env, writes data/instagram.json
-      const fs = require('fs');
-      const https = require('node:https');
+      - name: Fetch Instagram media
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        run: |
+          mkdir -p scripts
+          cat > scripts/fetch-instagram.js <<'NODE'
+          // fetch-instagram.js
+          // Uses IG_ACCESS_TOKEN and IG_USER_ID from env, writes data/instagram.json
+          const fs = require('fs');
+          const https = require('node:https');
 
-      function fetchJson(url) {
-        return new Promise((resolve, reject) => {
-          https.get(url, res => {
-            let body = '';
-            res.on('data', d => body += d);
-            res.on('end', () => {
-              try { resolve(JSON.parse(body)); } catch (e) { reject(e); }
+          function fetchJson(url) {
+            return new Promise((resolve, reject) => {
+              https.get(url, res => {
+                let body = '';
+                res.on('data', d => body += d);
+                res.on('end', () => {
+                  try { resolve(JSON.parse(body)); } catch (e) { reject(e); }
+                });
+              }).on('error', reject);
             });
-          }).on('error', reject);
-        });
-      }
-
-      (async () => {
-        try {
-          const token = process.env.IG_ACCESS_TOKEN;
-          const userId = process.env.IG_USER_ID;
-          if (!token || !userId) {
-            console.error('Missing IG_ACCESS_TOKEN or IG_USER_ID');
-            process.exit(2);
           }
 
-          const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
-          const url = `https://graph.instagram.com/${userId}/media?fields=${fields}&access_token=${token}`;
+          (async () => {
+            try {
+              const token = process.env.IG_ACCESS_TOKEN;
+              const userId = process.env.IG_USER_ID;
+              if (!token || !userId) {
+                console.error('Missing IG_ACCESS_TOKEN or IG_USER_ID');
+                process.exit(2);
+              }
 
-          const json = await fetchJson(url);
+              const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
+              const url = `https://graph.instagram.com/${userId}/media?fields=${fields}&access_token=${token}`;
 
-          const items = (json.data || []).slice(0, 50).map(it => ({
-            id: it.id,
-            caption: it.caption || '',
-            media_type: it.media_type,
-            media_url: it.media_url,
-            thumbnail_url: it.thumbnail_url || null,
-            permalink: it.permalink,
-            timestamp: it.timestamp
-          }));
+              const json = await fetchJson(url);
 
-          const out = { fetched_at: new Date().toISOString(), items };
+              const items = (json.data || []).slice(0, 50).map(it => ({
+                id: it.id,
+                caption: it.caption || '',
+                media_type: it.media_type,
+                media_url: it.media_url,
+                thumbnail_url: it.thumbnail_url || null,
+                permalink: it.permalink,
+                timestamp: it.timestamp
+              }));
 
-          fs.mkdirSync('data', { recursive: true });
-          fs.writeFileSync('data/instagram.json', JSON.stringify(out, null, 2), 'utf8');
+              const out = { fetched_at: new Date().toISOString(), items };
 
-          console.log('Wrote data/instagram.json with', items.length, 'items');
-        } catch (err) {
-          console.error('Error fetching Instagram data', err);
-          process.exit(1);
-        }
-      })();
-      NODE
+              fs.mkdirSync('data', { recursive: true });
+              fs.writeFileSync('data/instagram.json', JSON.stringify(out, null, 2), 'utf8');
 
-      node scripts/fetch-instagram.js
+              console.log('Wrote data/instagram.json with', items.length, 'items');
+            } catch (err) {
+              console.error('Error fetching Instagram data', err);
+              process.exit(1);
+            }
+          })();
+          NODE
 
-  - name: Commit and push data
-    run: |
-      git config user.name "github-actions[bot]"
-      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      git add data/instagram.json || true
-      if git diff --staged --quiet; then
-        echo "No changes to commit"
-      else
-        git commit -m "Update Instagram feed (automated)"
-        git push
-      fi
+          node scripts/fetch-instagram.js
+
+      - name: Commit and push data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/instagram.json || true
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update Instagram feed (automated)"
+            git push
+          fi
