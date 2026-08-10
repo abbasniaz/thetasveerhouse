@@ -100,3 +100,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// Instagram feed loader — loads pre-fetched data/instagram.json committed by the workflow
+async function loadInstagramFromRepo() {
+  const grid = document.querySelector('.gallery-grid');
+  if (!grid) return;
+  try {
+    const resp = await fetch('/data/instagram.json', { cache: 'no-cache' });
+    if (!resp.ok) return;
+    const json = await resp.json();
+    const items = (json.items || []).slice(0, 12); // show latest 12
+    if (!items.length) return;
+
+    // Clear existing static images (if any)
+    grid.innerHTML = '';
+
+    items.forEach(it => {
+      const imgSrc = (it.media_type === 'VIDEO') ? (it.thumbnail_url || it.media_url) : it.media_url;
+      const a = document.createElement('a');
+      a.href = it.permalink;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.className = 'ig-item';
+      const alt = (it.caption || '').replace(/"/g,'').slice(0,120);
+      a.innerHTML = `<img src="${imgSrc}" loading="lazy" alt="${alt}">`;
+      grid.appendChild(a);
+    });
+  } catch (err) {
+    console.error('Failed to load Instagram JSON', err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadInstagramFromRepo);
