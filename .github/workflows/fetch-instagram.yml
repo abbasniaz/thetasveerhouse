@@ -50,16 +50,6 @@ jobs:
   ]
 }
 JSON
-            # Commit placeholder if it changes
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/instagram.json || true
-            if git diff --staged --quiet; then
-              echo "No changes to commit"
-            else
-              git commit -m "Add placeholder instagram feed (secrets missing)"
-              git push || echo "Push failed (branch protections?). Placeholder is local only."
-            fi
             exit 0
           fi
 
@@ -80,7 +70,6 @@ function fetchJson(url) {
         try {
           const code = res.statusCode || 0;
           if (code < 200 || code >= 300) {
-            // Try to parse error body if possible
             let parsed;
             try { parsed = JSON.parse(body); } catch (e) { parsed = { raw: body }; }
             return reject(new Error(`HTTP ${code}: ${JSON.stringify(parsed)}`));
@@ -127,7 +116,6 @@ function fetchJson(url) {
     process.exit(0);
   } catch (err) {
     console.error('Error fetching Instagram data:', err && err.message ? err.message : err);
-    // Print full error for debugging (won't show token)
     console.error(err);
     process.exit(1);
   }
@@ -137,15 +125,14 @@ NODE
           # Run the fetch script
           node scripts/fetch-instagram.js
 
-      - name: Commit and push data
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/instagram.json || true
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update Instagram feed (automated)"
-            git push || echo "Push failed (branch protection or permission). Check repository permissions."
-          fi
+      - name: Create pull request with changes
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update Instagram feed (automated)"
+          committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          branch: "auto/instagram-feed-${{ github.run_id }}"
+          title: "Automated Instagram feed update"
+          body: "This PR updates data/instagram.json with the latest Instagram media (created by GitHub Actions)."
+          labels: automated,instagram
