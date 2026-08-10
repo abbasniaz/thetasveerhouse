@@ -1,0 +1,140 @@
+name: Fetch Instagram media
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '*/15 * * * *' # every 15 minutes; adjust if you like
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prepare or fetch Instagram media
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        run: |
+          set -euo pipefail
+
+          # If secrets are missing, write placeholder JSON so site shows something
+          if [ -z "${IG_ACCESS_TOKEN:-}" ] || [ -z "${IG_USER_ID:-}" ]; then
+            echo "IG_ACCESS_TOKEN or IG_USER_ID missing. Creating placeholder data/instagram.json. Please add the secrets to enable live feed."
+            mkdir -p data
+            cat > data/instagram.json <<'JSON'
+{
+  "fetched_at": "placeholder",
+  "items": [
+    {
+      "id": "placeholder-1",
+      "caption": "Placeholder post — Instagram feed not connected yet.",
+      "media_type": "IMAGE",
+      "media_url": "https://via.placeholder.com/800x800.png?text=Instagram+Placeholder+1",
+      "thumbnail_url": null,
+      "permalink": "https://www.instagram.com/",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  ]
+}
+JSON
+            exit 0
+          fi
+
+          # Write the Node fetcher to disk
+          mkdir -p scripts
+          cat > scripts/fetch-instagram.js <<'NODE'
+// fetch-instagram.js
+// Reads IG_ACCESS_TOKEN and IG_USER_ID from env and writes data/instagram.json
+const fs = require('fs');
+const https = require('node:https');
+
+function fetchJson(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let body = '';
+      res.on('data', (d) => body += d);
+      res.on('end', () => {
+        try {
+          const code = res.statusCode || 0;
+          if (code < 200 || code >= 300) {
+            // Try to parse error body if possible
+            let parsed;
+            try { parsed = JSON.parse(body); } catch (e) { parsed = { raw: body }; }
+            return reject(new Error(`HTTP ${code}: ${JSON.stringify(parsed)}`));
+          }
+          resolve(JSON.parse(body));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
+(async () => {
+  try {
+    const token = process.env.IG_ACCESS_TOKEN;
+    const userId = process.env.IG_USER_ID;
+    if (!token || !userId) {
+      console.error('Missing IG_ACCESS_TOKEN or IG_USER_ID');
+      process.exit(2);
+    }
+
+    const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
+    const url = `https://graph.instagram.com/${userId}/media?fields=${fields}&access_token=${token}`;
+
+    const json = await fetchJson(url);
+
+    const items = (json.data || []).slice(0, 50).map(it => ({
+      id: it.id,
+      caption: it.caption || '',
+      media_type: it.media_type,
+      media_url: it.media_url,
+      thumbnail_url: it.thumbnail_url || null,
+      permalink: it.permalink,
+      timestamp: it.timestamp
+    }));
+
+    const out = { fetched_at: new Date().toISOString(), items };
+
+    fs.mkdirSync('data', { recursive: true });
+    fs.writeFileSync('data/instagram.json', JSON.stringify(out, null, 2), 'utf8');
+
+    console.log('Wrote data/instagram.json with', items.length, 'items');
+    process.exit(0);
+  } catch (err) {
+    console.error('Error fetching Instagram data:', err && err.message ? err.message : err);
+    // Print full error for debugging (won't show token)
+    console.error(err);
+    process.exit(1);
+  }
+})();
+NODE
+
+          # Run the fetch script
+          node scripts/fetch-instagram.js
+
+      - name: Create pull request with changes
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update Instagram feed (automated)"
+          committer: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          branch: "auto/instagram-feed-${{ github.run_id }}"
+          title: "Automated Instagram feed update"
+          body: "This PR updates data/instagram.json with the latest Instagram media (created by GitHub Actions)."
+          labels: automated,instagram
