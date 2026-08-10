@@ -132,19 +132,37 @@
       <p>Send a message with your event date, location, and photography needs. I’ll respond with availability and package options.</p>
     </div>
  
-<form name="contact"
+<form id="contactForm" name="contact"
       method="POST"
       data-netlify="true"
       class="contact-form">
 
   <input type="hidden" name="form-name" value="contact" />
 
-      <input type="text" placeholder="Your Name" />
-      <input type="email" placeholder="Email Address" />
-      <input type="text" placeholder="Shoot Type: Wedding, Portrait, Event..." />
-      <textarea placeholder="Tell us about your shoot"></textarea>
-      <button type="button">Send Inquiry</button>
-      <small>Tip: Connect this form to Wix, Squarespace, WordPress, or Formspree when publishing.</small>
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" placeholder="Your Name" required />
+
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" placeholder="Email Address" required />
+
+      <label for="phone">Phone (optional)</label>
+      <input id="phone" name="phone" type="tel" placeholder="Phone number" />
+
+      <label for="method">Preferred contact method</label>
+      <select id="method" name="method" required>
+        <option value="email">Email</option>
+        <option value="whatsapp">WhatsApp</option>
+      </select>
+
+      <label for="message">Message</label>
+      <textarea id="message" name="message" placeholder="Tell us about your shoot" required></textarea>
+
+      <div style="display:flex; gap:12px; align-items:center">
+        <button type="submit" class="btn primary">Send Inquiry</button>
+        <button type="button" id="sendWhatsapp" class="btn secondary">Send via WhatsApp</button>
+      </div>
+
+      <small id="formStatus" aria-live="polite" style="display:block; margin-top:10px; color:var(--muted)">Tip: Connect this form to a backend (Formspree, Netlify Forms) to collect submissions. Currently messages will open your email or WhatsApp.</small>
     </form>
   </section>
 
