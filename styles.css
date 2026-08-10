@@ -86,10 +86,10 @@ h2 { font-size: clamp(2.4rem, 5vw, 5rem); }
   background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=900&q=80') center/cover;
   opacity: .88;
 }
-.photo-card:nth-child(2)::before { background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1495121605193-b116b5b9c5fe?auto=format&fit=crop&w=900&q=80'); }
-.photo-card:nth-child(3)::before { background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80'); }
-.photo-card:nth-child(4)::before { background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80'); }
-.photo-card:nth-child(5)::before { background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=900&q=80'); }
+.photo-card:nth-child(2)::before { background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1495121605193-b116b5b9c5fe?auto=format&fit=cr[...]'); }
+.photo-card:nth-child(3)::before { background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=cr[...]'); }
+.photo-card:nth-child(4)::before { background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=cr[...]'); }
+.photo-card:nth-child(5)::before { background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=cr[...]'); }
 .photo-card span { position: absolute; left: 24px; bottom: 22px; font-family: 'Cormorant Garamond', serif; font-size: 30px; }
 .tall { grid-row: span 2; }
 .wide { grid-column: span 2; }
@@ -101,7 +101,7 @@ h2 { font-size: clamp(2.4rem, 5vw, 5rem); }
 .service-grid h3 { font-family: 'Cormorant Garamond', serif; font-size: 30px; margin: 0 0 12px; color: var(--gold-light); }
 
 .about { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 48px; align-items: center; }
-.about-image { min-height: 560px; border-radius: 34px; background: linear-gradient(180deg, transparent, rgba(0,0,0,.7)), url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=80') center/cover; border: 1px solid rgba(255,255,255,0.08); }
+.about-image { min-height: 560px; border-radius: 34px; background: linear-gradient(180deg, transparent, rgba(0,0,0,.7)), url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=for[...]'); }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 32px; }
 .stats div { padding: 18px; background: var(--soft); border-radius: 18px; }
 .stats strong { display: block; color: var(--gold-light); font-family: 'Cormorant Garamond', serif; font-size: 28px; }
@@ -152,20 +152,37 @@ footer a { color: var(--gold-light); }
   transform: scale(1.03);
 }
 
+/* Reduced-size WhatsApp floating button */
 .whatsapp-button {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 14px;
+  right: 14px;
   background: #25D366;
   color: white;
-  padding: 15px 20px;
-  border-radius: 50px;
+  padding: 10px 12px;
+  border-radius: 40px;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   z-index: 9999;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
 }
 
 .whatsapp-button:hover {
   background: #1ebe5d;
+  transform: translateY(-1px);
 }
+
+@media (max-width: 480px) {
+  .whatsapp-button {
+    padding: 8px 10px;
+    font-size: 13px;
+    bottom: 10px;
+    right: 10px;
+    border-radius: 34px;
+  }
+}
+
